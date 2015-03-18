@@ -47,6 +47,12 @@ class Bag {
 		resetAvailableTiles();
 	}
 	
+	public function getTileFromBagById(tileId:Int) {
+		var result = tiles[tileId];
+		availableTiles.splice(tileId, 1);
+		return result;
+	}
+	
 	function resetAvailableTiles()
 	{
 		for (i in 1...101) availableTiles.push(i);

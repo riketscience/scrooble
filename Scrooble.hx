@@ -17,7 +17,7 @@ class Scrooble extends Sprite {
 	private var Background:Bitmap;
 	private var Footer:Bitmap;
 	private var Rack:Bitmap;
-	private var Game:ScroobleGame; 
+	public var Game:ScroobleGame; 
 	
 	public function new () {
 		

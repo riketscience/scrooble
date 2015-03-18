@@ -1,6 +1,4 @@
 package scrooble ;
-
-
 import flash.display.Bitmap;
 import flash.display.Sprite;
 import motion.Actuate;
@@ -9,6 +7,7 @@ import motion.easing.Linear;
 import motion.easing.Quad;
 import openfl.Assets;
 import flash.events.MouseEvent;
+import openfl.geom.Point;
 
 
 class Tile extends Sprite {
@@ -23,6 +22,7 @@ class Tile extends Sprite {
 	public var isOnBoard:Bool;
 	public var isPlaced:Bool;
 	public var letter:Letter;
+	public var mouseCache:Point;
 	
 	
 	public function new (imagePath:String) {
@@ -51,7 +51,7 @@ class Tile extends Sprite {
 		mouseEnabled = true;
 		buttonMode = true;
 		
-		this.addEventListener(MouseEvent.MOUSE_DOWN, mouseOnTile);
+		this.addEventListener(MouseEvent.MOUSE_DOWN, mouseDownTile);
 		this.addEventListener(MouseEvent.MOUSE_UP, mouseUpTile);
 		
 		#if (!js || openfl_html5)
@@ -72,7 +72,8 @@ class Tile extends Sprite {
 	
 	
 	
-	function mouseOnTile(event:MouseEvent):Void {
+	function mouseDownTile(event:MouseEvent):Void {
+		mouseCache = new Point (event.stageX, event.stageY);
 		this.startDrag();
 	}
 	
@@ -83,24 +84,33 @@ class Tile extends Sprite {
 	}
 	
 	private function snapToTile(x, y) {
-		
-		var targetRow = getClosestBoardRow(y);
-		var targetColumn = getClosestBoardColumn(x);
-		
-		//var targetTile = squares[targetRow][targetColumn];
+		// THIS IS AWFUL, i need scope reference to the main board to get an actual board place int, 
+		// and check if this square is occupied already, and if not and update that place as occupied 
+		var canDropHere = true; // ToDo: implement logic
+		if (canDropHere){
+			var targetColumn = getClosestBoardColumn(x);
+			var targetRow = getClosestBoardRow(y);
+			
+			// var targetTile = squares[targetRow][targetColumn];
 
-		
-		this.x = this.x+targetRow;
-		this.y = this.y+targetColumn;
+			this.x = targetColumn;
+			this.y = targetRow;
+		} else {
+			this.x = mouseCache.x;
+			this.y = mouseCache.y;
+		}
 	}
 	
 	function getClosestBoardRow(y:Float) {
-		
-		return 5;
+		// THIS IS AWFUL, i need scope reference to the main board to get an actual board place int, 
+		// and check if this square is occupied already, and if not and update that place as occupied 
+		//return y - (y % 52);
+		return y%52 > (52/2) ? y+(52 - y%52) : y-y%52;
 	}
 	
 	function getClosestBoardColumn(x:Float) {
-		return 15;
+		//return x - (x % 49);
+		return x%49 > (49/2) ? x+(49 - x%49) : x-x%49;
 	}
 	
 	public function moveTo (duration:Float, targetX:Float, targetY:Float):Void {

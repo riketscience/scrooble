@@ -218,11 +218,11 @@ class ScroobleGame extends Sprite {
 	private function addStartingTileToRack (column:Int):Void {
 		var row = 1;
 		var tile = null;
-		var chosenTile = Math.round (Math.random () * (100)); // 100 tiles in the game  -- bag.availableTiles.length
+		var chosenTileId = Math.round (Math.random () * (bag.availableTiles.length)); // 100 tiles in the game  -- bag.availableTiles.length
 		// ToDo: ultimately maintain list of available tiles
 				
 		if (tile == null) {
-			tile = bag.tiles[chosenTile]; //  new Tile (tileImages[type]);		
+			tile = bag.getTileFromBagById(chosenTileId); //  new Tile (tileImages[type]);		
 		}
 		
 		tile.initialize ();
