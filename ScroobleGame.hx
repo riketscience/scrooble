@@ -23,21 +23,19 @@ class ScroobleGame extends Sprite {
 	private static var NUM_COLUMNS = 7;
 	private static var NUM_ROWS = 7;
 	private static var NUM_LETTERS = 7;
-	private static var squarewidth = 49;
-	private static var squareheight = 52;
+	public var squarewidth = 49;
+	public var squareheight = 52;
 	private static var squarespacer = 0;
 	
-	private static var squareImages = [ "images/SL.png", "images/DL.png", "images/TL.png", "images/DW.png", "images/TW.png" ];
-	private static var tileImages = [ "images/A.png", "images/B.png", "images/C.png", "images/D.png", "images/E.png", "images/F.png", "images/G.png" ];
+	private static var squareTypeImages = [ "images/SL.png", "images/DL.png", "images/TL.png", "images/DW.png", "images/TW.png" ];
 	
 	private var Background:Sprite;
 	private var IntroSound:Sound;
 	private var Logo:Bitmap;
-	private var Score:TextField;
+	public var Score:TextField;
 	private var Sound3:Sound;
 	private var Sound4:Sound;
 	private var Sound5:Sound;
-	private var BoardTileContainer:Sprite;
 	private var SquareContainer:Sprite;
 	private var Rack:Sprite;
 	public var currentScale:Float;
@@ -47,12 +45,10 @@ class ScroobleGame extends Sprite {
 	private var selectedTile:Tile;
 	private var tiles:Array<Tile>;
 	private var racktiles:Array <Tile>;
-	private var MainBoard:Board;
+	public var MainBoard:Board;
 	private var oursquares:Array <Array <Int>>;
 	private var bag:Bag;
-	
-	public var squares:Array <Array <GameSquare>>;
-	
+		
 	public function new () {
 		
 		super ();
@@ -70,7 +66,6 @@ class ScroobleGame extends Sprite {
 		
 		//board = new Board ();
 		racktiles = new Array <Tile> ();
-		squares = new Array <Array <GameSquare>> ();
 		MainBoard = new Board ();
 		bag = new Bag ();
 		
@@ -96,11 +91,11 @@ class ScroobleGame extends Sprite {
 					   
 		for (row in 0...NUM_ROWS) {
 			
-			squares[row] = new Array <GameSquare> ();
+			MainBoard.squares[row] = new Array <GameSquare> ();
 			
 			for (column in 0...NUM_COLUMNS) {
 				
-				squares[row][column] = null;
+				MainBoard.squares[row][column] = null;
 				
 			}
 		}
@@ -114,7 +109,6 @@ class ScroobleGame extends Sprite {
 		Background = new Sprite ();
 		Logo = new Bitmap (Assets.getBitmapData ("images/logo.png"));
 		Score = new TextField ();
-		BoardTileContainer = new Sprite ();
 		SquareContainer = new Sprite ();
 		Rack = new Sprite ();
 	}
@@ -138,19 +132,19 @@ class ScroobleGame extends Sprite {
 		var contentHeight = (squareheight + squarespacer) * NUM_ROWS;
 		
 		Score.x = contentWidth - 200;
-		Score.width = 200;
-		Score.y = 12;
+		Score.width = 550;
+		Score.y = 620;
 		Score.selectable = false;
 		Score.defaultTextFormat = defaultFormat;
 		
 		#if (!js || openfl_html5)
-		Score.filters = [ new BlurFilter (1.5, 1.5), new DropShadowFilter (1, 45, 0, 0.2, 5, 5) ];
+		// Score.filters = [ new BlurFilter (1.5, 1.5), new DropShadowFilter (1, 45, 0, 0.2, 5, 5) ];
 		#else
 		Score.y = 0;
 		Score.x += 90;
 		#end
 		
-		Score.embedFonts = true;
+		//Score.embedFonts = true;
 		Score.textColor = 0xFFEE88;
 		addChild (Score);
 		
@@ -167,11 +161,8 @@ class ScroobleGame extends Sprite {
 		
 		SquareContainer.x = 14;
 		SquareContainer.y = Background.y + 14;
-		BoardTileContainer.x = 14;
-		BoardTileContainer.y = Background.y + 14;
 		Rack.x = 14;
 		Rack.y = Background.y + (NUM_ROWS* squareheight )+ 45;
-		addChild (BoardTileContainer);
 		addChild (Rack);
 		addChild (SquareContainer);
 		
@@ -188,32 +179,33 @@ class ScroobleGame extends Sprite {
 		currentScore = 8;
 		Score.text = "!"+currentScore+"!";
 		bag.initialize();
+		drawBoardSquares();		         // CANT THESE BE IN INITIALISERS IN THE CLASSES THEMSELVES?!
 		addStartingTilesToRack();		
 		// IntroSound.play ();
 	}
 	
-	function addStartingTilesToRack() {
-			for (row in 0...NUM_ROWS) {
-			
+	function drawBoardSquares() {   
+		for (row in 0...NUM_ROWS) {	
 			for (column in 0...NUM_COLUMNS) {
 				addSquare (row, column, false);
 			}
 		}
+	}
 	
-		for (column in 0...NUM_LETTERS) {
-			addStartingTileToRack (column);			
+	function addStartingTilesToRack() {  
+		for (letterPosition in 0...NUM_LETTERS) {
+			moveATileFromBagToRack (letterPosition);			
 		}		
 	}
 
-	private function addStartingTileToRack (column:Int):Void {
-		var tile = bag.getTile(); 		
+	private function moveATileFromBagToRack (column:Int):Void {
+		var tile = bag.takeATile(); 		
 		
-		tile.initialize(10); // boardState!
+		tile.initialize(this); // boardState! currently irrelevant random number
 		
-		//tile.type = chosenTile;
 		tile.column = column;
-
-		
+		// !!!!!!! how about setting tile.isOnRack and tile.isInBag now? create enum?? use this throughout on all tiles? 
+		// or start with empty list of tiles belonging to board and rack, all starting in bag and migrating around? Hmmm
 		racktiles[column] = tile;
 		
 		var position = getRackPosition (column);
@@ -231,9 +223,9 @@ class ScroobleGame extends Sprite {
 
 	private function addSquare (row:Int, column:Int, animate:Bool = true):Void {
 		
-		var type = getBoardSquareType(row, column); // Math.round (Math.random () * (squareImages.length - 1));
+		var type = oursquares[row][column];
 				
-		var square = new GameSquare (squareImages[type]);
+		var square = new GameSquare (squareTypeImages[type]);
 		
 		square.initialize ();
 		
@@ -241,7 +233,7 @@ class ScroobleGame extends Sprite {
 		square.type = type;
 		square.row = row;
 		square.column = column;
-		squares[row][column] = square;
+		MainBoard.squares[row][column] = square;
 		
 		var position = getPosition (row, column);
 
@@ -255,14 +247,6 @@ class ScroobleGame extends Sprite {
 		
 	}
 	
-	
-	private function getBoardSquareType (row:Int, col:Int):Int {
-		
-			var type = Math.round (Math.random () * (squareImages.length - 1));
-			type = oursquares[row][col];
-		return type;
-	}
-	
 	private function getPosition (row:Int, column:Int):Point {
 		
 		return new Point (column * (squarewidth + squarespacer), row * (squareheight + squarespacer));
@@ -270,8 +254,8 @@ class ScroobleGame extends Sprite {
 	}
 	
 	private function getRackPosition (column:Int):Point {
-		// RJP y value needs to be relative
-		return new Point (column * (squarewidth + squarespacer), 1 * (squareheight + squarespacer));
+		// !!!!!!! y value needs to be right on the Rack, which itself needs a decent relative position / size like the board
+		return new Point (column * (squarewidth + squarespacer), 8 * (squareheight + squarespacer));
 		
 	}
 	

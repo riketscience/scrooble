@@ -61,10 +61,11 @@ class Scrooble extends Sprite {
 		
 		Game.resize (newWidth, newHeight);
 		
+		// !!!!!!!!!!!!! this hard shizz should be a rescaling function for the rack, just like game.resize
 		Rack.scaleX = 1.3*Game.currentScale;
 		Rack.scaleY = 1.3*Game.currentScale;
 		Rack.x = newWidth / 2 + 22 - Rack.width / 2 - 86;
-		Rack.y = newHeight - 80- Rack.height;
+		Rack.y = newHeight - 100 - Rack.height;
 		
 	}
 	

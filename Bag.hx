@@ -39,25 +39,16 @@ class Bag {
 				   new Tile (tileImages[24]), new Tile (tileImages[24]),
 				   new Tile (tileImages[25]),
 				   new Tile (tileImages[26]), new Tile (tileImages[26])];
-	/*		letters [name, value, occurance]
-			letters = [["A",1,9],["B",3,2],["C",3,2],["D",2,4],["E",1,12],["F",4,2],["G",2,3],["H",4,2],
-			["I",1,9],["J",8,1],["K",5,1],["L",1,4],["M",3,2],["N",1,6],["O",1,8],["P",3,2],["Q",10,1],["R",1,6],
-	["S",1,4],["T",1,6],["U",1,4],["V",4,2],["W",4,2],["X",8,1],["Y",4,2],["Z",10,1],["_",99,2]];
-*/
-		resetAvailableTiles();
+				   
+		for (i in 0...100) availableTiles.push(i);
 	}
 	
-	public function getTile() {
-		var chosenTileId = Math.round (Math.random () * (availableTiles.length)); // 100 tiles in the game  -- bag.availableTiles.length
+	public function takeATile() {
+		var chosenTileId = Math.round (Math.random () * (availableTiles.length - 1)); // 100 tiles in the game  -- bag.availableTiles.length
 	
 		var result = tiles[chosenTileId];
 		availableTiles.splice(chosenTileId, 1);
 		return result;
-	}
-	
-	function resetAvailableTiles()
-	{
-		for (i in 1...101) availableTiles.push(i);
 	}
 }
 	
