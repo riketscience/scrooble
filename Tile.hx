@@ -9,7 +9,6 @@ import openfl.Assets;
 import flash.events.MouseEvent;
 import openfl.geom.Point;
 
-
 class Tile extends Sprite {
 	
 	public var row:Int;
@@ -23,7 +22,7 @@ class Tile extends Sprite {
 	public var isPlaced:Bool;
 	public var letter:Letter;
 	public var mouseCache:Point;
-	
+	var boardState:Int;
 	
 	public function new (imagePath:String) {
 		
@@ -43,7 +42,7 @@ class Tile extends Sprite {
 		
 	}
 
-	public function initialize ():Void {
+	public function initialize (board):Void {
 		
 		moving = false;
 		removed = false;
@@ -53,6 +52,8 @@ class Tile extends Sprite {
 		
 		this.addEventListener(MouseEvent.MOUSE_DOWN, mouseDownTile);
 		this.addEventListener(MouseEvent.MOUSE_UP, mouseUpTile);
+		
+		this.boardState = board;
 		
 		#if (!js || openfl_html5)
 		scaleX = 1;
@@ -92,9 +93,15 @@ class Tile extends Sprite {
 			var targetRow = getClosestBoardRow(y);
 			
 			// var targetTile = squares[targetRow][targetColumn];
-
-			this.x = targetColumn;
-			this.y = targetRow;
+			//this.x = targetColumn;
+			//this.y = targetRow;
+			
+			//this.moveTo (0.15 * (row + 1), targetColumn, targetRow);
+			#if (!js || openfl_html5)
+			this.alpha = 0.7;
+			Actuate.tween (this, 0.1, { x:targetColumn, y:targetRow, alpha:1 } ).ease(Quad.easeOut);
+			#end				
+			
 		} else {
 			this.x = mouseCache.x;
 			this.y = mouseCache.y;
@@ -110,7 +117,7 @@ class Tile extends Sprite {
 	
 	function getClosestBoardColumn(x:Float) {
 		//return x - (x % 49);
-		return x%49 > (49/2) ? x+(49 - x%49) : x-x%49;
+		return x%49 > (48/2) ? x+(49 - x%49) : x-x%49;
 	}
 	
 	public function moveTo (duration:Float, targetX:Float, targetY:Float):Void {

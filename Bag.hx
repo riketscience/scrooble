@@ -47,9 +47,11 @@ class Bag {
 		resetAvailableTiles();
 	}
 	
-	public function getTileFromBagById(tileId:Int) {
-		var result = tiles[tileId];
-		availableTiles.splice(tileId, 1);
+	public function getTile() {
+		var chosenTileId = Math.round (Math.random () * (availableTiles.length)); // 100 tiles in the game  -- bag.availableTiles.length
+	
+		var result = tiles[chosenTileId];
+		availableTiles.splice(chosenTileId, 1);
 		return result;
 	}
 	

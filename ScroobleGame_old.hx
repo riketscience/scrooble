@@ -40,7 +40,7 @@ class ScroobleGame extends Sprite {
 	private var Sound5:Sound;
 	private var BoardTileContainer:Sprite;
 	private var SquareContainer:Sprite;
-	private var RackTileContainer:Sprite;
+	private var Rack:Sprite;
 	
 	public var currentScale:Float;
 	public var currentScore:Int;
@@ -123,7 +123,7 @@ class ScroobleGame extends Sprite {
 		Logo = new Bitmap (Assets.getBitmapData ("images/logo.png"));
 		Score = new TextField ();
 		BoardTileContainer = new Sprite ();
-		RackTileContainer = new Sprite ();
+		Rack = new Sprite ();
 		SquareContainer = new Sprite ();
 	}
 
@@ -177,13 +177,13 @@ class ScroobleGame extends Sprite {
 		SquareContainer.y = Background.y + 14;
 		BoardTileContainer.x = 14;
 		BoardTileContainer.y = Background.y + 14;
-		RackTileContainer.x = 14;
-		RackTileContainer.y = Background.y + (NUM_ROWS* squareheight )+ 40;
+		Rack.x = 14;
+		Rack.y = Background.y + (NUM_ROWS* squareheight )+ 40;
 		BoardTileContainer.addEventListener (MouseEvent.MOUSE_DOWN, BoardTileContainer_onMouseDown);
-		RackTileContainer.addEventListener (MouseEvent.MOUSE_DOWN, RackTileContainer_onMouseDown);
+		Rack.addEventListener (MouseEvent.MOUSE_DOWN, Rack_onMouseDown);
 		Lib.current.stage.addEventListener (MouseEvent.MOUSE_UP, stage_onMouseUp);
 		addChild (BoardTileContainer);
-		addChild (RackTileContainer);
+		addChild (Rack);
 		addChild (SquareContainer);
 		
 		IntroSound = Assets.getSound ("soundTheme");
@@ -251,8 +251,8 @@ class ScroobleGame extends Sprite {
 			tile.y = position.y;
 			
 		
-		RackTileContainer.addChild (tile);	
-		RackTileContainer.addChild (tile);	
+		Rack.addChild (tile);	
+		Rack.addChild (tile);	
 		
 		
 	}
@@ -683,7 +683,7 @@ class ScroobleGame extends Sprite {
 		
 	}
 	
-	private function RackTileContainer_onMouseDown (event:MouseEvent):Void {
+	private function Rack_onMouseDown (event:MouseEvent):Void {
 		
 		if (Std.is (event.target, Tile)) {
 			// RJP Interesting Line Below !!!!!!!!!!!!!! tile selection...

@@ -20,7 +20,6 @@ import openfl.Assets;
 
 class ScroobleGame extends Sprite {
 	
-	
 	private static var NUM_COLUMNS = 7;
 	private static var NUM_ROWS = 7;
 	private static var NUM_LETTERS = 7;
@@ -40,14 +39,13 @@ class ScroobleGame extends Sprite {
 	private var Sound5:Sound;
 	private var BoardTileContainer:Sprite;
 	private var SquareContainer:Sprite;
-	private var RackTileContainer:Sprite;
+	private var Rack:Sprite;
 	public var currentScale:Float;
 	public var currentScore:Int;
 	private var cacheMouse:Point;
 	private var needToCheckMatches:Bool;
 	private var selectedTile:Tile;
 	private var tiles:Array<Tile>;
-	private var boardtiles:Array <Array <Tile>>;
 	private var racktiles:Array <Tile>;
 	private var MainBoard:Board;
 	private var oursquares:Array <Array <Int>>;
@@ -71,13 +69,11 @@ class ScroobleGame extends Sprite {
 		currentScore = 0;
 		
 		//board = new Board ();
-		boardtiles = new Array <Array <Tile>> ();
 		racktiles = new Array <Tile> ();
 		squares = new Array <Array <GameSquare>> ();
 		MainBoard = new Board ();
 		bag = new Bag ();
 		
-		oursquares = new Array<Array<Int>> (); 
 		// 				Single:0 DL:1 TL:2 DW:3 TW:4
 		oursquares = [[4,0,0,1,0,0,0,4,0,0,0,1,0,0,4],
 					  [0,3,0,0,0,2,0,0,0,2,0,0,0,3,0],
@@ -101,12 +97,10 @@ class ScroobleGame extends Sprite {
 		for (row in 0...NUM_ROWS) {
 			
 			squares[row] = new Array <GameSquare> ();
-			boardtiles[row] = new Array <Tile> ();
 			
 			for (column in 0...NUM_COLUMNS) {
 				
 				squares[row][column] = null;
-				boardtiles[row][column] = null;
 				
 			}
 		}
@@ -116,14 +110,13 @@ class ScroobleGame extends Sprite {
 			racktiles[column] = null;
 			
 		}
-
 		
 		Background = new Sprite ();
 		Logo = new Bitmap (Assets.getBitmapData ("images/logo.png"));
 		Score = new TextField ();
 		BoardTileContainer = new Sprite ();
 		SquareContainer = new Sprite ();
-		RackTileContainer = new Sprite ();
+		Rack = new Sprite ();
 	}
 
 	
@@ -176,13 +169,10 @@ class ScroobleGame extends Sprite {
 		SquareContainer.y = Background.y + 14;
 		BoardTileContainer.x = 14;
 		BoardTileContainer.y = Background.y + 14;
-		RackTileContainer.x = 14;
-		RackTileContainer.y = Background.y + (NUM_ROWS* squareheight )+ 45;
-		//BoardTileContainer.addEventListener (MouseEvent.MOUSE_DOWN, BoardTileContainer_onMouseDown);
-		//RackTileContainer.addEventListener (MouseEvent.MOUSE_DOWN, RackTileContainer_onMouseDown);
-		Lib.current.stage.addEventListener (MouseEvent.MOUSE_UP, stage_onMouseUp);
+		Rack.x = 14;
+		Rack.y = Background.y + (NUM_ROWS* squareheight )+ 45;
 		addChild (BoardTileContainer);
-		addChild (RackTileContainer);
+		addChild (Rack);
 		addChild (SquareContainer);
 		
 		IntroSound = Assets.getSound ("soundTheme");
@@ -216,16 +206,9 @@ class ScroobleGame extends Sprite {
 	}
 
 	private function addStartingTileToRack (column:Int):Void {
-		var row = 1;
-		var tile = null;
-		var chosenTileId = Math.round (Math.random () * (bag.availableTiles.length)); // 100 tiles in the game  -- bag.availableTiles.length
-		// ToDo: ultimately maintain list of available tiles
-				
-		if (tile == null) {
-			tile = bag.getTileFromBagById(chosenTileId); //  new Tile (tileImages[type]);		
-		}
+		var tile = bag.getTile(); 		
 		
-		tile.initialize ();
+		tile.initialize(10); // boardState!
 		
 		//tile.type = chosenTile;
 		tile.column = column;
@@ -261,31 +244,11 @@ class ScroobleGame extends Sprite {
 		squares[row][column] = square;
 		
 		var position = getPosition (row, column);
-	/*	
-		if (1==2) { // (animate) {
-			
-			var firstPosition = getPosition (-1, column);
-			
-			#if (!js || openfl_html5)
-			tile.alpha = 0;
-			#end
-			tile.x = firstPosition.x;
-			tile.y = firstPosition.y;
-			
-			tile.moveTo (0.15 * (row + 1), position.x, position.y);
-			#if (!js || openfl_html5)
-			Actuate.tween (tile, 0.3, { alpha: 1 } ).delay (0.15 * (row - 2)).ease (Quad.easeOut);
-			#end
-			
-		} else {
-	*/		
-			square.x = position.x;
-			square.y = position.y;
-			square.x_centre = position.x;
-			square.y_centre = position.y;
 
-			
-		// }
+		square.x = position.x;
+		square.y = position.y;
+		square.x_centre = position.x;
+		square.y_centre = position.y;
 		
 		SquareContainer.addChild (square);
 		// needToCheckMatches = true;
@@ -298,51 +261,6 @@ class ScroobleGame extends Sprite {
 			var type = Math.round (Math.random () * (squareImages.length - 1));
 			type = oursquares[row][col];
 		return type;
-	}
-	
-	private function updateBoard ():Void {
-		
-		for (column in 0...NUM_COLUMNS) {
-			
-			var spaces = 0;
-			
-			for (row in 0...NUM_ROWS) {
-				
-				var index = (NUM_ROWS - 1) - row;
-				var tile = boardtiles[index][column];
-				
-				if (tile == null) {
-					
-					spaces++;
-					
-				} else {
-					
-					if (spaces > 0) {
-						
-						var position = getPosition (index + spaces, column);
-						tile.moveTo (0.15 * spaces, position.x,position.y);
-						
-						tile.row = index + spaces;
-						boardtiles[index + spaces][column] = tile;
-						boardtiles[index][column] = null;
-						
-						needToCheckMatches = true;
-						
-					}
-					
-				}
-				
-			}
-			
-			for (i in 0...spaces) {
-				
-				var row = (spaces - 1) - i;
-				addSquare (row, column);
-				
-			}
-			
-		}
-		
 	}
 	
 	private function getPosition (row:Int, column:Int):Point {
@@ -402,86 +320,4 @@ class ScroobleGame extends Sprite {
 		
 	}
 
-	// Event Handlers
-	private function stage_onMouseUp (event:MouseEvent):Void {
-		
-		if (cacheMouse != null && selectedTile != null && !selectedTile.moving) {
-			
-			var differenceX = event.stageX - cacheMouse.x;
-			var differenceY = event.stageY - cacheMouse.y;
-			
-			if (Math.abs (differenceX) > 10 || Math.abs (differenceY) > 10) {
-				
-				var swapToRow = selectedTile.row;
-				var swapToColumn = selectedTile.column;
-				
-				if (Math.abs (differenceX) > Math.abs (differenceY)) {
-					
-					if (differenceX < 0) {
-						
-						swapToColumn --;
-						
-					} else {
-						
-						swapToColumn ++;
-						
-					}
-					
-				} else {
-					
-					if (differenceY < 0) {
-						
-						swapToRow --;
-						
-					} else {
-						
-						swapToRow ++;
-						
-					}
-					
-				}
-				
-				// swapTile (selectedTile, swapToRow, swapToColumn);
-				
-			}
-			
-		}
-		
-		selectedTile = null;
-		cacheMouse = null;
-		
-	}
-	
-	private function BoardTileContainer_onMouseDown (event:MouseEvent):Void {
-		
-		if (Std.is (event.target, Tile)) {
-			// RJP Interesting Line Below !!!!!!!!!!!!!! tile selection...
-			selectedTile = cast event.target;
-			cacheMouse = new Point (event.stageX, event.stageY);
-			
-		} else {
-			
-			cacheMouse = null;
-			selectedTile = null;
-			
-		}
-		
-	}
-	
-	private function RackTileContainer_onMouseDown (event:MouseEvent):Void {
-		
-		if (Std.is (event.target, Tile)) {
-			// RJP Interesting Line Below !!!!!!!!!!!!!! tile selection...
-			selectedTile = cast event.target;
-			cacheMouse = new Point (event.stageX, event.stageY);
-			
-		} else {
-			
-			cacheMouse = null;
-			selectedTile = null;
-			
-		}
-		
-	}
-	
 }
