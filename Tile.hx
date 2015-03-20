@@ -14,16 +14,12 @@ class Tile extends Sprite {
 	public var row:Int;
 	public var column:Int;
 	public var type:Int;
-	// may or may NOT need these later
-	// public var isInBag:Bool;
-	// public var isOnRack:Bool;
-	// public var isOnBoard:Bool;
-	public var isPlaced:Bool;
 	public var letter:String;
 	public var value:Int;
-	public var mouseCache:Point;
-	public var cache_originiatingSquareX:Int;
-	public var cache_originiatingSquareY:Int;
+	
+	var mouseCache:Point;
+	var cache_originiatingSquareX:Int;
+	var cache_originiatingSquareY:Int;	
 	var isMoving:Bool;
 	var game:ScroobleGame;
 	var boardState:Board;
@@ -42,7 +38,6 @@ class Tile extends Sprite {
 		
 		graphics.beginFill (0x000000, 0);
 		graphics.drawRect ( -5, -5, 66, 66);
-
 	}
 
 	public function initialize (game:ScroobleGame):Void {
@@ -58,8 +53,7 @@ class Tile extends Sprite {
 		scaleX = 1;
 		scaleY = 1;
 		alpha = 1;
-		#end
-		
+		#end	
 	}
 	
 	function mouseDownTile(event:MouseEvent):Void {
@@ -133,9 +127,8 @@ class Tile extends Sprite {
 			nextTileLocation += h;
 			rowResult += 1;
 		}
-		//return rowResult;
-		h = game.squareheight;
-		var result = y%h > Math.floor(h/2) ? y+(h - y%h) : y-y%h;
+		//h = game.squareheight;
+		//var result = y%h > Math.floor(h/2) ? y+(h - y%h) : y-y%h;
 		game.Score.text = game.Score.text + ", " + Std.string (rowResult);
 
 		return rowResult;
@@ -149,9 +142,8 @@ class Tile extends Sprite {
 			nextTileLocation += w;
 			columnResult += 1;
 		}
-		//return rowResult;
-		w = game.squarewidth;
-		var result = x%w > Math.floor(w/2) ? x+(w - x%w) : x-x%w;
+		//w = game.squarewidth;
+		//var result = x%w > Math.floor(w/2) ? x+(w - x%w) : x-x%w;
 		game.Score.text = Std.string (columnResult);
 
 		return columnResult;

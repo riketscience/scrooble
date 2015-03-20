@@ -1,6 +1,5 @@
 package scrooble ;
 
-
 import flash.display.Bitmap;
 import flash.display.Sprite;
 import motion.Actuate;
@@ -21,23 +20,17 @@ class GameSquare extends Sprite {
 	public var current_tile_value:Int;
 	public var current_tile_letter:String;
 	public var multipler_value:Int;
-		// var CURRENT TILE!!!! need a dictionary, ["A":1,"B":4,"C":1.....]    ( int representation? ) 
-		// CALM DOWN THATS ON THE BOARD OBJECT 
-		// var MULTIPLIER
 	public function new (imagePath:String) {
 		
 		super ();
 		
 		var image = new Bitmap (Assets.getBitmapData (imagePath));
 		image.smoothing = true;
-		addChild (image);
-		
+		addChild (image);		
 		mouseChildren = false;
-		buttonMode = false;
-		
+		buttonMode = false;		
 		graphics.beginFill (0x000000, 0);
 		graphics.drawRect (-5, -5, 86, 66);
-		
 	}
 	
 	
@@ -53,14 +46,11 @@ class GameSquare extends Sprite {
 		scaleX = 1;
 		scaleY = 1;
 		alpha = 1;
-		#end
-		
+		#end	
 	}
 		
 	public function get_coords()
 	{
 		return 0;
 	}
-	// Event Handlers
-	
 }

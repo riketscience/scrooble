@@ -1,6 +1,5 @@
 package scrooble ;
 
-
 import flash.display.Bitmap;
 import flash.display.Sprite;
 import flash.events.Event;
@@ -17,46 +16,44 @@ import motion.Actuate;
 import motion.easing.Quad;
 import openfl.Assets;
 
-
 class ScroobleGame extends Sprite {
 	
 	private static var NUM_COLUMNS = 7;
 	private static var NUM_ROWS = 7;
 	private static var NUM_LETTERS = 7;
-	public var squarewidth = 49;
-	public var squareheight = 52;
-	private static var squarespacer = 0;
-	
+	private static var squarespacer = 0;	
 	private static var squareTypeImages = [ "images/SL.png", "images/DL.png", "images/TL.png", "images/DW.png", "images/TW.png" ];
 	
 	private var Background:Sprite;
 	private var IntroSound:Sound;
 	private var Logo:Bitmap;
-	public var Score:TextField;
 	private var Sound3:Sound;
 	private var Sound4:Sound;
 	private var Sound5:Sound;
 	private var SquareContainer:Sprite;
 	private var Rack:Sprite;
-	public var currentScale:Float;
-	public var currentScore:Int;
 	private var cacheMouse:Point;
 	private var needToCheckMatches:Bool;
 	private var selectedTile:Tile;
 	private var tiles:Array<Tile>;
 	private var racktiles:Array <Tile>;
-	public var MainBoard:Board;
 	private var oursquares:Array <Array <Int>>;
 	private var bag:Bag;
-		
+
+	public var MainBoard:Board;
+	public var squarewidth = 49;
+	public var squareheight = 52;
+	public var Score:TextField;
+	public var currentScale:Float;
+	public var currentScore:Int;
+
 	public function new () {
 		
 		super ();
 		
 		initialize ();
 		construct ();	
-		newGame ();
-		
+		newGame ();		
 	}
 	
 	private function initialize ():Void {
@@ -85,10 +82,7 @@ class ScroobleGame extends Sprite {
 					  [0,3,0,0,0,2,0,0,0,2,0,0,0,3,0],
 					  [0,0,3,0,0,0,1,0,1,0,0,0,3,0,0],
 					  [4,0,0,1,0,0,0,4,0,0,0,1,0,0,4]];
-					  
-		
-		//boardPositions = new Array<Array<Float
-					   
+					  					   
 		for (row in 0...NUM_ROWS) {
 			
 			MainBoard.squares[row] = new Array <GameSquare> ();
@@ -152,7 +146,7 @@ class ScroobleGame extends Sprite {
 		Background.graphics.beginFill (0xFFFFFF, 0.4);
 		Background.graphics.drawRect (0, 0, contentWidth+27, contentHeight+27);
 
-		// RJP Background.graphics.drawRect (0, contentHeight+80, (squarewidth + squarespacer) * 7, (squareheight + squarespacer) );
+		// Background.graphics.drawRect (0, contentHeight+80, (squarewidth + squarespacer) * 7, (squareheight + squarespacer) );
 
 		#if (!js || openfl_html5)
 		Background.filters = [ new BlurFilter (10, 10) ];
@@ -244,19 +238,16 @@ class ScroobleGame extends Sprite {
 		
 		SquareContainer.addChild (square);
 		// needToCheckMatches = true;
-		
 	}
 	
 	private function getPosition (row:Int, column:Int):Point {
 		
-		return new Point (column * (squarewidth + squarespacer), row * (squareheight + squarespacer));
-		
+		return new Point (column * (squarewidth + squarespacer), row * (squareheight + squarespacer));	
 	}
 	
 	private function getRackPosition (column:Int):Point {
 		// !!!!!!! y value needs to be right on the Rack, which itself needs a decent relative position / size like the board
 		return new Point (column * (squarewidth + squarespacer), 8 * (squareheight + squarespacer));
-		
 	}
 	
 	public function resize (newWidth:Int, newHeight:Int):Void {
@@ -300,8 +291,7 @@ class ScroobleGame extends Sprite {
 			
 		}
 		
-		x = newWidth / 2 - (currentWidth * currentScale) / 2;
-		
+		x = newWidth / 2 - (currentWidth * currentScale) / 2;		
 	}
-
+	
 }
