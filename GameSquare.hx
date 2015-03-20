@@ -18,8 +18,12 @@ class GameSquare extends Sprite {
 	public var x_centre:Float;
 	public var y_centre:Float;
 	public var type:Int;
-	public var current_tile:Int;
-		
+	public var current_tile_value:Int;
+	public var current_tile_letter:String;
+	public var multipler_value:Int;
+		// var CURRENT TILE!!!! need a dictionary, ["A":1,"B":4,"C":1.....]    ( int representation? ) 
+		// CALM DOWN THATS ON THE BOARD OBJECT 
+		// var MULTIPLIER
 	public function new (imagePath:String) {
 		
 		super ();
@@ -41,6 +45,9 @@ class GameSquare extends Sprite {
 			
 		mouseEnabled = false;
 		buttonMode = false;
+		current_tile_letter = "";
+		current_tile_value = 0;  // "A" or 0?  (alphabet[0] = A)
+		multipler_value = 1;
 		
 		#if (!js || openfl_html5)
 		scaleX = 1;

@@ -34,4 +34,14 @@ class Board {
 		["S",1,4],["T",1,6],["U",1,4],["V",4,2],["W",4,2],["X",8,1],["Y",4,2],["Z",10,1],["_",99,2]];
 	}
 	
+	public function getSquareValue(x:Int, y:Int) {
+		var letterValue = squares[x][y].current_tile_value;
+		var multiplier = squares[x][y].multipler_value;
+		return letterValue * multiplier;
+	}
+	
+	public function setSquareValue(x:Int, y:Int, val:Int, let:String) {
+		squares[x][y].current_tile_value = val;
+		squares[x][y].current_tile_letter = let;
+	}
 }

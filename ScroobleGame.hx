@@ -132,7 +132,7 @@ class ScroobleGame extends Sprite {
 		var contentHeight = (squareheight + squarespacer) * NUM_ROWS;
 		
 		Score.x = contentWidth - 200;
-		Score.width = 550;
+		Score.width = 250;
 		Score.y = 620;
 		Score.selectable = false;
 		Score.defaultTextFormat = defaultFormat;
@@ -199,10 +199,8 @@ class ScroobleGame extends Sprite {
 	}
 
 	private function moveATileFromBagToRack (column:Int):Void {
-		var tile = bag.takeATile(); 		
-		
-		tile.initialize(this); // boardState! currently irrelevant random number
-		
+		var tile = bag.takeATile(); 			
+		tile.initialize(this);	
 		tile.column = column;
 		// !!!!!!! how about setting tile.isOnRack and tile.isInBag now? create enum?? use this throughout on all tiles? 
 		// or start with empty list of tiles belonging to board and rack, all starting in bag and migrating around? Hmmm
@@ -223,16 +221,18 @@ class ScroobleGame extends Sprite {
 
 	private function addSquare (row:Int, column:Int, animate:Bool = true):Void {
 		
-		var type = oursquares[row][column];
+		var squareType = oursquares[row][column];
 				
-		var square = new GameSquare (squareTypeImages[type]);
+		var square = new GameSquare (squareTypeImages[squareType]);
 		
 		square.initialize ();
 		
 		square.id = (NUM_COLUMNS * row) + column;
-		square.type = type;
+		// SL:0 DL:1 TL:2 DW:3 TW:4
+		square.type = squareType;
 		square.row = row;
 		square.column = column;
+		square.multipler_value = squareType+1;   // ERROR !!!! need a function once whole word recognition available. for now SL,DL,TL,DW,TW=1,2,3,4,5
 		MainBoard.squares[row][column] = square;
 		
 		var position = getPosition (row, column);
