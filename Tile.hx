@@ -61,21 +61,28 @@ class Tile extends Sprite {
 		isMoving = true;
 		cache_originiatingSquareX = getClosestBoardColumn(x);
 		cache_originiatingSquareY = getClosestBoardRow(y);
-		
 		//var val = game.MainBoard.getSquareValue(getClosestBoardColumn(x), getClosestBoardRow(y));
-		game.Score.text = this.letter + "(" + this.value + ")";
-
+		//game.Score.text = this.letter + "(" + this.value + ")";
+		
+		this.parent.setChildIndex(this, parent.numChildren - 1);
+		
 		this.startDrag();
 	}
 	
+	function get_neighbourTiles() {
+		var neighbourTiles = [];
+		neighbourTiles.push([column, row - 1]);
+		neighbourTiles.push([column + 1, row]);
+		neighbourTiles.push([column, row + 1]);
+		neighbourTiles.push([column - 1, row]);
+		//game.Score.text = neighbourTiles[0][0] + "," + neighbourTiles[0][1] + "/"
+		//				+ neighbourTiles[1][0] + "," + neighbourTiles[1][1] + "/"
+		//				+ neighbourTiles[2][0] + "," + neighbourTiles[2][1] + "/"
+		//				+ neighbourTiles[3][0] + "," + neighbourTiles[3][1];
+		return neighbourTiles;
+	}
+	
 	function mouseUpTile(event:MouseEvent):Void {
-		
-		//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		//   please only affect the piece you're dragging											  !!
-		//   currently tiles load in left to right. so RH tiles pass OVER LH tiles and mouseup works  !!
-		//   However, if you try to drop a LH tile onto a RH tile you see it shows UNDER the other    !!
-		//   tile and all the logic fails 															  !!
-		//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		
 		if (this.isMoving) {
 			this.stopDrag();
@@ -84,8 +91,11 @@ class Tile extends Sprite {
 			var targetRow = getClosestBoardRow(y);
 			var canDrop = canDropHere(targetColumn, targetRow); 
 			if (canDrop) {	
-				snapToTile(targetColumn, targetRow);
-				updateBoard(targetColumn, targetRow);
+				this.column = targetColumn;
+				this.row = targetRow;
+				snapToBoard(column, row);
+				updateBoard(column, row);
+				updateThisGoScore(); 
 			} else {
 				this.x = mouseCache.x;
 				this.y = mouseCache.y;			
@@ -93,6 +103,32 @@ class Tile extends Sprite {
 			
 			isMoving = false;
 		}
+	}
+	
+	function updateThisGoScore() {
+		var nt = get_neighbourTiles();
+
+		var xU = nt[0][0], yU = nt[0][1];
+		var xD = nt[2][0], yD = nt[2][1];
+		if (yU >= 0 && game.MainBoard.squares[xU][yU].current_tile_value > 0
+		||  yD < game.NUM_ROWS && game.MainBoard.squares[xD][yD].current_tile_value > 0) {
+			startVerticalTrackScore();
+		}
+
+		var xR = nt[1][0], yR = nt[1][1];
+		var xL = nt[3][0], yL = nt[3][1];
+		if (xL >= 0 && game.MainBoard.squares[xL][yL].current_tile_value > 0
+		||  xR < game.NUM_COLUMNS && game.MainBoard.squares[xR][yR].current_tile_value > 0) {
+			startHorizontalTrackScore();
+		}
+	}
+	
+	function startVerticalTrackScore(){
+		game.Score.text = "vert";
+	}
+	
+	function startHorizontalTrackScore(){
+		game.Score.text = "horiz";
 	}
 	
 	function updateBoard(x, y) {
@@ -106,7 +142,7 @@ class Tile extends Sprite {
 		// isMoving = false;
 	}
 	
-	private function snapToTile(targetColumn, targetRow) {
+	private function snapToBoard(targetColumn, targetRow) {
 		#if (!js || openfl_html5)
 		this.alpha = 0.7;
 		Actuate.tween (this, 0.1, { x:targetColumn*game.squarewidth, y:targetRow*game.squareheight, alpha:1 } ).ease(Quad.easeOut).onComplete(stopMoving);

@@ -18,8 +18,8 @@ import openfl.Assets;
 
 class ScroobleGame extends Sprite {
 	
-	private static var NUM_COLUMNS = 7;
-	private static var NUM_ROWS = 7;
+	public  var NUM_COLUMNS = 7;
+	public  var NUM_ROWS = 7;
 	private static var NUM_LETTERS = 7;
 	private static var squarespacer = 0;	
 	private static var squareTypeImages = [ "images/SL.png", "images/DL.png", "images/TL.png", "images/DW.png", "images/TW.png" ];
