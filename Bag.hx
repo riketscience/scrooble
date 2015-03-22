@@ -18,7 +18,7 @@ class Bag {
 			new Tile (tileImages[2],"C",3), new Tile (tileImages[2],"C",3),
 			new Tile (tileImages[3],"D",2), new Tile (tileImages[3],"D",2), new Tile (tileImages[3],"D",2), new Tile (tileImages[3],"D",2),
 			new Tile (tileImages[4],"E",1), new Tile (tileImages[4],"E",1), new Tile (tileImages[4],"E",1), new Tile (tileImages[4],"E",1), new Tile (tileImages[4],"E",1), new Tile (tileImages[4],"E",1), new Tile (tileImages[4],"E",1), new Tile (tileImages[4],"E",1), new Tile (tileImages[4],"E",1), new Tile (tileImages[4],"E",1), new Tile (tileImages[4],"E",1), new Tile (tileImages[4],"E",1),
-			new Tile (tileImages[5],"F",2), new Tile (tileImages[5],"F",2),
+			new Tile (tileImages[5],"F",4), new Tile (tileImages[5],"F",4),
 			new Tile (tileImages[6],"G",2), new Tile (tileImages[6],"G",2), new Tile (tileImages[6],"G",2),
 			new Tile (tileImages[7],"H",4), new Tile (tileImages[7],"H",4),
 			new Tile (tileImages[8],"I",1), new Tile (tileImages[8],"I",1), new Tile (tileImages[8],"I",1), new Tile (tileImages[8],"I",1), new Tile (tileImages[8],"I",1), new Tile (tileImages[8],"I",1), new Tile (tileImages[8],"I",1), new Tile (tileImages[8],"I",1), new Tile (tileImages[8],"I",1),
@@ -36,7 +36,7 @@ class Bag {
 			new Tile (tileImages[20],"U",1), new Tile (tileImages[20],"U",1), new Tile (tileImages[20],"U",1), new Tile (tileImages[20],"U",1),
 			new Tile (tileImages[21],"V",4), new Tile (tileImages[21],"V",4),
 			new Tile (tileImages[22],"W",4), new Tile (tileImages[22],"W",4),
-			new Tile (tileImages[23],"X",10),
+			new Tile (tileImages[23],"X",8),
 			new Tile (tileImages[24],"Y",4), new Tile (tileImages[24],"Y",4),
 			new Tile (tileImages[25],"Z",10),
 			new Tile (tileImages[26],"_",999), new Tile (tileImages[26],"_",999)];

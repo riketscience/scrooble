@@ -20,6 +20,7 @@ class GameSquare extends Sprite {
 	public var current_tile_value:Int;
 	public var current_tile_letter:String;
 	public var multipler_value:Int;
+	public var wordMultipler_value:Int;
 	public function new (imagePath:String) {
 		
 		super ();
@@ -41,6 +42,7 @@ class GameSquare extends Sprite {
 		current_tile_letter = "";
 		current_tile_value = 0;  // "A" or 0?  (alphabet[0] = A)
 		multipler_value = 1;
+		wordMultipler_value = 1;
 		
 		#if (!js || openfl_html5)
 		scaleX = 1;

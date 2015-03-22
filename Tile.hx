@@ -75,10 +75,6 @@ class Tile extends Sprite {
 		neighbourTiles.push([column + 1, row]);
 		neighbourTiles.push([column, row + 1]);
 		neighbourTiles.push([column - 1, row]);
-		//game.Score.text = neighbourTiles[0][0] + "," + neighbourTiles[0][1] + "/"
-		//				+ neighbourTiles[1][0] + "," + neighbourTiles[1][1] + "/"
-		//				+ neighbourTiles[2][0] + "," + neighbourTiles[2][1] + "/"
-		//				+ neighbourTiles[3][0] + "," + neighbourTiles[3][1];
 		return neighbourTiles;
 	}
 	
@@ -106,36 +102,96 @@ class Tile extends Sprite {
 	}
 	
 	function updateThisGoScore() {
+		var thisGoScore = 0;
+		game.Score.text = " ";
 		var nt = get_neighbourTiles();
 
 		var xU = nt[0][0], yU = nt[0][1];
 		var xD = nt[2][0], yD = nt[2][1];
 		if (yU >= 0 && game.MainBoard.squares[xU][yU].current_tile_value > 0
 		||  yD < game.NUM_ROWS && game.MainBoard.squares[xD][yD].current_tile_value > 0) {
-			startVerticalTrackScore();
+			thisGoScore += getVerticalTrackScore();
 		}
 
 		var xR = nt[1][0], yR = nt[1][1];
 		var xL = nt[3][0], yL = nt[3][1];
 		if (xL >= 0 && game.MainBoard.squares[xL][yL].current_tile_value > 0
 		||  xR < game.NUM_COLUMNS && game.MainBoard.squares[xR][yR].current_tile_value > 0) {
-			startHorizontalTrackScore();
+			thisGoScore += getHorizontalTrackScore();
 		}
+
 	}
 	
-	function startVerticalTrackScore(){
-		game.Score.text = "vert";
+	function getVerticalTrackScore(){
+		var vWordStartPos = this.row;
+		var multiplier = 1;
+		var vScore = 0;
+		var vWord = "";
+		var t = this.row - 1;
+		while (t >= 0) {
+			if (game.MainBoard.squares[this.column][t].current_tile_value != 0) {
+				vWordStartPos--;
+				t--;
+			} else {
+				t = -1;
+			}
+		}
+		var vPos = vWordStartPos;
+		var wordMultipler = 1;
+		while (vPos < game.NUM_ROWS) {
+			if (game.MainBoard.squares[this.column][vPos].current_tile_value != 0) {
+				vWord += game.MainBoard.squares[this.column][vPos].current_tile_letter;
+				vScore += (game.MainBoard.squares[this.column][vPos].current_tile_value * game.MainBoard.squares[this.column][vPos].multipler_value); 
+				if (vPos == this.row) wordMultipler *= game.MainBoard.squares[this.column][vPos].wordMultipler_value;
+				vPos++;
+			} else {
+				vPos = game.NUM_ROWS;
+			}
+		}
+		vScore *= wordMultipler;
+		game.Score.text += vWord +":"+ vScore + " ";
+		return vScore;
 	}
 	
-	function startHorizontalTrackScore(){
-		game.Score.text = "horiz";
+	function getHorizontalTrackScore(){
+		var hWordStartPos = this.column;
+		var multiplier = 1;
+		var hScore = 0;
+		var hWord = "";
+		var t = this.column - 1;
+		while (t >= 0) {
+			if (game.MainBoard.squares[t][this.row].current_tile_value != 0) {
+				hWordStartPos--;
+				t--;
+			} else {
+				t = -1;
+			}
+		}
+		var hPos = hWordStartPos;
+		var wordMultipler = 1;
+		while (hPos < game.NUM_COLUMNS) {
+			if (game.MainBoard.squares[hPos][this.row].current_tile_value != 0) {
+				hWord += game.MainBoard.squares[hPos][this.row].current_tile_letter;
+				hScore += (game.MainBoard.squares[hPos][this.row].current_tile_value * game.MainBoard.squares[hPos][this.row].multipler_value); 
+				//if (hPos == this.column) ... sort of thing for below. need to know if i put it down during my turn or not ie if to count multipliers or not
+				   wordMultipler *= game.MainBoard.squares[hPos][this.row].wordMultipler_value;
+				hPos++;
+			} else {
+				hPos = game.NUM_COLUMNS;
+			}
+		}
+		hScore *= wordMultipler;
+		game.Score.text += hWord +":" + hScore;
+		return hScore;
 	}
 	
 	function updateBoard(x, y) {
 		game.MainBoard.squares[x][y].current_tile_letter = this.letter;
 		game.MainBoard.squares[x][y].current_tile_value = this.value;
 		// and reset originator square back to zero
-		game.MainBoard.setSquareValue(cache_originiatingSquareX,cache_originiatingSquareY,0,"");
+		if (cache_originiatingSquareY<game.NUM_ROWS) { // !!! if = dirty fix for current lack of board v rack tile differentiation 
+			game.MainBoard.setSquareValue(cache_originiatingSquareX,cache_originiatingSquareY,0,"");
+		}
 	}
 	
 	function stopMoving() {
@@ -150,9 +206,7 @@ class Tile extends Sprite {
 	}
 	
 	function canDropHere(x:Int, y:Int) {
-		var sqval = game.MainBoard.getSquareValue(x, y);
-		game.Score.text += " : " + sqval;
-		return sqval > 0 ? false : true;
+		return game.MainBoard.getSquareValue(x, y) <= 0;
 	}
 	
 	function getClosestBoardRow(y:Float):Int {
@@ -163,10 +217,6 @@ class Tile extends Sprite {
 			nextTileLocation += h;
 			rowResult += 1;
 		}
-		//h = game.squareheight;
-		//var result = y%h > Math.floor(h/2) ? y+(h - y%h) : y-y%h;
-		game.Score.text = game.Score.text + ", " + Std.string (rowResult);
-
 		return rowResult;
 	}
 	
@@ -178,10 +228,6 @@ class Tile extends Sprite {
 			nextTileLocation += w;
 			columnResult += 1;
 		}
-		//w = game.squarewidth;
-		//var result = x%w > Math.floor(w/2) ? x+(w - x%w) : x-x%w;
-		game.Score.text = Std.string (columnResult);
-
 		return columnResult;
 	}
 	

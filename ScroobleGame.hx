@@ -111,33 +111,32 @@ class ScroobleGame extends Sprite {
 		
 	private function construct ():Void {
 		
+		var contentWidth = (squarewidth + squarespacer) * NUM_COLUMNS;
+		var contentHeight = (squareheight + squarespacer) * NUM_ROWS;
+
 		Logo.smoothing = true;
 		addChild (Logo);
 		
+		// Score (Textfield) setup
 		var font = Assets.getFont ("fonts/FreebooterUpdated.ttf");
-		var defaultFormat = new TextFormat (font.fontName, 60, 0x000000);
-		defaultFormat.align = TextFormatAlign.RIGHT;
-		
+		var defaultFormat = new TextFormat (font.fontName, 40, 0x000000);
+		defaultFormat.align = TextFormatAlign.LEFT;		
 		#if (js && !openfl_html5)
 		defaultFormat.align = TextFormatAlign.LEFT;
-		#end
-		
-		var contentWidth = (squarewidth + squarespacer) * NUM_COLUMNS;
-		var contentHeight = (squareheight + squarespacer) * NUM_ROWS;
-		
-		Score.x = contentWidth - 200;
-		Score.width = 250;
+		#end				
+		Score.multiline = true;
+		Score.wordWrap = true;
+		Score.x = 10;
+		Score.width = 450;
 		Score.y = 620;
 		Score.selectable = false;
-		Score.defaultTextFormat = defaultFormat;
-		
+		Score.defaultTextFormat = defaultFormat;		
 		#if (!js || openfl_html5)
 		// Score.filters = [ new BlurFilter (1.5, 1.5), new DropShadowFilter (1, 45, 0, 0.2, 5, 5) ];
 		#else
 		Score.y = 0;
 		Score.x += 90;
-		#end
-		
+		#end		
 		//Score.embedFonts = true;
 		Score.textColor = 0xFFEE88;
 		addChild (Score);
@@ -226,7 +225,22 @@ class ScroobleGame extends Sprite {
 		square.type = squareType;
 		square.row = row;
 		square.column = column;
-		square.multipler_value = squareType+1;   // ERROR !!!! need a function once whole word recognition available. for now SL,DL,TL,DW,TW=1,2,3,4,5
+		switch squareType {
+			case 0: square.multipler_value = 1;
+			case 1: square.multipler_value = 2;
+			case 2: square.multipler_value = 3;
+			case 3: square.multipler_value = 1;
+			case 4: square.multipler_value = 1;
+			default: square.multipler_value = 1;
+		}
+		switch squareType {
+			case 0: square.wordMultipler_value = 1;
+			case 1: square.wordMultipler_value = 1;
+			case 2: square.wordMultipler_value = 1;
+			case 3: square.wordMultipler_value = 2;
+			case 4: square.wordMultipler_value = 3;
+			default: square.wordMultipler_value = 1;
+		}
 		MainBoard.squares[row][column] = square;
 		
 		var position = getPosition (row, column);
