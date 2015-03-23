@@ -28,9 +28,14 @@ class Board {
 	}
 	
 	public function getSquareValue(x:Int, y:Int) {
+		/// NOT USED AND PRETTY SHIT. value of tile is arbitrary, we do calculations on tiles in Tile methods
 		var letterValue = squares[x][y].current_tile_value;
 		var multiplier = squares[x][y].multipler_value;
 		return letterValue * multiplier;
+	}
+	
+	public function tileExistsAt(x:Int, y:Int) {
+		return squares[x][y].current_tile_value > 0;
 	}
 	
 	public function setSquareValue(x:Int, y:Int, val:Int, let:String) {

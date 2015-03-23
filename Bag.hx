@@ -39,7 +39,7 @@ class Bag {
 			new Tile (tileImages[23],"X",8),
 			new Tile (tileImages[24],"Y",4), new Tile (tileImages[24],"Y",4),
 			new Tile (tileImages[25],"Z",10),
-			new Tile (tileImages[26],"_",999), new Tile (tileImages[26],"_",999)];
+			new Tile (tileImages[26],"_",1), new Tile (tileImages[26],"_",1)];
 				   
 		for (i in 0...100) availableTiles.push(i);
 	}

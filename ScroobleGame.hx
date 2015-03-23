@@ -32,6 +32,7 @@ class ScroobleGame extends Sprite {
 	private var Sound5:Sound;
 	private var SquareContainer:Sprite;
 	private var Rack:Sprite;
+	private var goButton:GoButton;
 	private var cacheMouse:Point;
 	private var needToCheckMatches:Bool;
 	private var selectedTile:Tile;
@@ -41,9 +42,13 @@ class ScroobleGame extends Sprite {
 	private var bag:Bag;
 
 	public var MainBoard:Board;
+	public var players:Array<Player>;
+	public var player1:Player;
+	public var player2:Player;
 	public var squarewidth = 49;
 	public var squareheight = 52;
 	public var Score:TextField;
+	public var MessageArea:TextField;
 	public var currentScale:Float;
 	public var currentScore:Int;
 
@@ -65,7 +70,8 @@ class ScroobleGame extends Sprite {
 		racktiles = new Array <Tile> ();
 		MainBoard = new Board ();
 		bag = new Bag ();
-		
+		player1 = new Player();
+		player2 = new Player();
 		// 				Single:0 DL:1 TL:2 DW:3 TW:4
 		oursquares = [[4,0,0,1,0,0,0,4,0,0,0,1,0,0,4],
 					  [0,3,0,0,0,2,0,0,0,2,0,0,0,3,0],
@@ -103,8 +109,11 @@ class ScroobleGame extends Sprite {
 		Background = new Sprite ();
 		Logo = new Bitmap (Assets.getBitmapData ("images/logo.png"));
 		Score = new TextField ();
+		MessageArea = new TextField ();
 		SquareContainer = new Sprite ();
 		Rack = new Sprite ();
+		goButton = new GoButton();
+
 	}
 
 	
@@ -141,6 +150,21 @@ class ScroobleGame extends Sprite {
 		Score.textColor = 0xFFEE88;
 		addChild (Score);
 		
+		var mdefaultFormat = new TextFormat (font.fontName, 25, 0x000000);
+		mdefaultFormat.align = TextFormatAlign.LEFT;		
+		#if (js && !openfl_html5)
+		mdefaultFormat.align = TextFormatAlign.LEFT;
+		#end				
+		MessageArea.multiline = true;
+		MessageArea.wordWrap = true;
+		MessageArea.x = 10;
+		MessageArea.width = 450;
+		MessageArea.y = 590;
+		MessageArea.textColor = 0xFFEE88;
+		MessageArea.selectable = false;
+		MessageArea.defaultTextFormat = mdefaultFormat;		
+		addChild (MessageArea);
+		
 		Background.y = 85;
 		Background.graphics.beginFill (0xFFFFFF, 0.4);
 		Background.graphics.drawRect (0, 0, contentWidth+27, contentHeight+27);
@@ -154,10 +178,10 @@ class ScroobleGame extends Sprite {
 		
 		SquareContainer.x = 14;
 		SquareContainer.y = Background.y + 14;
-		Rack.x = 14;
-		Rack.y = Background.y + (NUM_ROWS* squareheight )+ 45;
-		addChild (Rack);
 		addChild (SquareContainer);
+		
+		goButton.x = 80;
+		goButton.y = 620;
 		
 		IntroSound = Assets.getSound ("soundTheme");
 		Sound3 = Assets.getSound ("sound3");
@@ -172,11 +196,20 @@ class ScroobleGame extends Sprite {
 		currentScore = 8;
 		Score.text = "!"+currentScore+"!";
 		bag.initialize();
+		player1.initialize(1,"Rikets", true);
+		player2.initialize(2,"Hannah", false);
+		MessageArea.text = "Player "+player1.id+ " ("+player1.name+")";
+		
 		drawBoardSquares();		         // CANT THESE BE IN INITIALISERS IN THE CLASSES THEMSELVES?!
+		givePlayersTiles(NUM_LETTERS);
 		addStartingTilesToRack();		
 		// IntroSound.play ();
 	}
-	
+
+	function givePlayersTiles(numLetters:Int) {
+		
+	}
+			
 	function drawBoardSquares() {   
 		for (row in 0...NUM_ROWS) {	
 			for (column in 0...NUM_COLUMNS) {
@@ -187,30 +220,23 @@ class ScroobleGame extends Sprite {
 	
 	function addStartingTilesToRack() {  
 		for (letterPosition in 0...NUM_LETTERS) {
-			moveATileFromBagToRack (letterPosition);			
-		}		
-	}
-
-	private function moveATileFromBagToRack (column:Int):Void {
-		var tile = bag.takeATile(); 			
-		tile.initialize(this);	
-		tile.column = column;
-		// !!!!!!! how about setting tile.isOnRack and tile.isInBag now? create enum?? use this throughout on all tiles? 
-		// or start with empty list of tiles belonging to board and rack, all starting in bag and migrating around? Hmmm
-		racktiles[column] = tile;
-		
-		var position = getRackPosition (column);
-
-			tile.x = position.x;
-			tile.y = position.y;
+			var tile = bag.takeATile(); 			
+			tile.initialize(this);	
+			tile.column = letterPosition;
+			// !!!!!!! how about setting tile.isOnRack and tile.isInBag now? create enum?? use this throughout on all tiles? 
+			// or start with empty list of tiles belonging to board and rack, all starting in bag and migrating around? Hmmm
+			racktiles[letterPosition] = tile;
 			
-		// RJP this was adding to racktilecontainer but had problems with droptarget over squares 
-		SquareContainer.addChild (tile);	
-		
-		Score.text = Std.string (bag.availableTiles.length);
-		
-	}
-	
+			var position = getRackPosition (letterPosition);
+
+				tile.x = position.x;
+				tile.y = position.y;
+				
+			// RJP this was adding to racktilecontainer but had problems with droptarget over squares 
+			SquareContainer.addChild (tile);			
+			Score.text = Std.string (bag.availableTiles.length);
+		}		
+	}	
 
 	private function addSquare (row:Int, column:Int, animate:Bool = true):Void {
 		

@@ -16,11 +16,15 @@ class Tile extends Sprite {
 	public var type:Int;
 	public var letter:String;
 	public var value:Int;
+
+	private var wordMultiplier:Int;
+	private	var letterMultiplier:Int;
 	
 	var mouseCache:Point;
 	var cache_originiatingSquareX:Int;
 	var cache_originiatingSquareY:Int;	
 	var isMoving:Bool;
+	var isFixed:Bool;
 	var game:ScroobleGame;
 	var boardState:Board;
 	
@@ -48,7 +52,7 @@ class Tile extends Sprite {
 		this.addEventListener(MouseEvent.MOUSE_UP, mouseUpTile);
 		this.game = game;
 		this.boardState = game.MainBoard;
-		
+		this.isFixed = false;
 		#if (!js || openfl_html5)
 		scaleX = 1;
 		scaleY = 1;
@@ -60,12 +64,9 @@ class Tile extends Sprite {
 		mouseCache = new Point (this.x, this.y); // (event.stageX, event.stageY);
 		isMoving = true;
 		cache_originiatingSquareX = getClosestBoardColumn(x);
-		cache_originiatingSquareY = getClosestBoardRow(y);
-		//var val = game.MainBoard.getSquareValue(getClosestBoardColumn(x), getClosestBoardRow(y));
-		//game.Score.text = this.letter + "(" + this.value + ")";
-		
-		this.parent.setChildIndex(this, parent.numChildren - 1);
-		
+		cache_originiatingSquareY = getClosestBoardRow(y);		
+		this.parent.setChildIndex(this, parent.numChildren - 1);		
+
 		this.startDrag();
 	}
 	
@@ -127,6 +128,7 @@ class Tile extends Sprite {
 		var multiplier = 1;
 		var vScore = 0;
 		var vWord = "";
+		var sq:GameSquare;
 		var t = this.row - 1;
 		while (t >= 0) {
 			if (game.MainBoard.squares[this.column][t].current_tile_value != 0) {
@@ -137,18 +139,20 @@ class Tile extends Sprite {
 			}
 		}
 		var vPos = vWordStartPos;
-		var wordMultipler = 1;
+		wordMultiplier = 1;
 		while (vPos < game.NUM_ROWS) {
-			if (game.MainBoard.squares[this.column][vPos].current_tile_value != 0) {
-				vWord += game.MainBoard.squares[this.column][vPos].current_tile_letter;
-				vScore += (game.MainBoard.squares[this.column][vPos].current_tile_value * game.MainBoard.squares[this.column][vPos].multipler_value); 
-				if (vPos == this.row) wordMultipler *= game.MainBoard.squares[this.column][vPos].wordMultipler_value;
+			sq = game.MainBoard.squares[this.column][vPos];
+			if (sq.current_tile_value != 0) {
+				letterMultiplier = this.isFixed ? 1 : sq.multipler_value; 
+				vWord += sq.current_tile_letter;
+				vScore += (sq.current_tile_value * sq.multipler_value); 
+				wordMultiplier *= this.isFixed ? 1 : sq.wordMultipler_value;
 				vPos++;
 			} else {
 				vPos = game.NUM_ROWS;
 			}
 		}
-		vScore *= wordMultipler;
+		vScore *= wordMultiplier;
 		game.Score.text += vWord +":"+ vScore + " ";
 		return vScore;
 	}
@@ -158,6 +162,7 @@ class Tile extends Sprite {
 		var multiplier = 1;
 		var hScore = 0;
 		var hWord = "";
+		var sq:GameSquare;
 		var t = this.column - 1;
 		while (t >= 0) {
 			if (game.MainBoard.squares[t][this.row].current_tile_value != 0) {
@@ -168,19 +173,20 @@ class Tile extends Sprite {
 			}
 		}
 		var hPos = hWordStartPos;
-		var wordMultipler = 1;
+		wordMultiplier = 1;
 		while (hPos < game.NUM_COLUMNS) {
-			if (game.MainBoard.squares[hPos][this.row].current_tile_value != 0) {
-				hWord += game.MainBoard.squares[hPos][this.row].current_tile_letter;
-				hScore += (game.MainBoard.squares[hPos][this.row].current_tile_value * game.MainBoard.squares[hPos][this.row].multipler_value); 
-				//if (hPos == this.column) ... sort of thing for below. need to know if i put it down during my turn or not ie if to count multipliers or not
-				   wordMultipler *= game.MainBoard.squares[hPos][this.row].wordMultipler_value;
+			sq = game.MainBoard.squares[hPos][this.row];
+			if (sq.current_tile_value != 0) {
+				letterMultiplier = this.isFixed ? 1 : sq.multipler_value; 
+				hWord += sq.current_tile_letter;
+				hScore += (sq.current_tile_value * sq.multipler_value); 
+				wordMultiplier *= this.isFixed ? 1 : sq.wordMultipler_value;
 				hPos++;
 			} else {
 				hPos = game.NUM_COLUMNS;
 			}
 		}
-		hScore *= wordMultipler;
+		hScore *= wordMultiplier;
 		game.Score.text += hWord +":" + hScore;
 		return hScore;
 	}
@@ -206,7 +212,7 @@ class Tile extends Sprite {
 	}
 	
 	function canDropHere(x:Int, y:Int) {
-		return game.MainBoard.getSquareValue(x, y) <= 0;
+		return !game.MainBoard.tileExistsAt(x, y);
 	}
 	
 	function getClosestBoardRow(y:Float):Int {
