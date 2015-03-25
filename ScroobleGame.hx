@@ -31,7 +31,6 @@ class ScroobleGame extends Sprite {
 	private var Sound4:Sound;
 	private var Sound5:Sound;
 	private var SquareContainer:Sprite;
-	private var Rack:Sprite;
 	private var goButton:GoButton;
 	private var cacheMouse:Point;
 	private var needToCheckMatches:Bool;
@@ -70,6 +69,7 @@ class ScroobleGame extends Sprite {
 		racktiles = new Array <Tile> ();
 		MainBoard = new Board ();
 		bag = new Bag ();
+		goButton = new GoButton();
 		player1 = new Player();
 		player2 = new Player();
 		// 				Single:0 DL:1 TL:2 DW:3 TW:4
@@ -111,8 +111,6 @@ class ScroobleGame extends Sprite {
 		Score = new TextField ();
 		MessageArea = new TextField ();
 		SquareContainer = new Sprite ();
-		Rack = new Sprite ();
-		goButton = new GoButton();
 
 	}
 
@@ -180,8 +178,8 @@ class ScroobleGame extends Sprite {
 		SquareContainer.y = Background.y + 14;
 		addChild (SquareContainer);
 		
-		goButton.x = 80;
-		goButton.y = 620;
+		goButton.x = 10;
+		goButton.y = 10;
 		
 		IntroSound = Assets.getSound ("soundTheme");
 		Sound3 = Assets.getSound ("sound3");

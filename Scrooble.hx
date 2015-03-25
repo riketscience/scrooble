@@ -15,6 +15,7 @@ class Scrooble extends Sprite {
 	private var Footer:Bitmap;
 	private var Rack:Bitmap;
 	public var Game:ScroobleGame; 
+	public var gb:GoButton;
 	
 	public function new () {
 		
@@ -34,6 +35,8 @@ class Scrooble extends Sprite {
 		Footer = new Bitmap (Assets.getBitmapData ("images/center_bottom.png"));
 		Rack = new Bitmap (Assets.getBitmapData ("images/rack.png"));
 		Game = new ScroobleGame ();		
+		gb = new GoButton();
+		
 	}
 	
 	private function construct ():Void {
@@ -43,6 +46,8 @@ class Scrooble extends Sprite {
 		addChild (Background);
 		addChild (Rack);
 		// addChild (Footer);
+		gb.initialize(Game);
+		addChild (gb);		
 		addChild (Game);		
 	}
 	
